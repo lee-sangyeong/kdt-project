@@ -1,0 +1,71 @@
+기본정보
+차종명: 아이오닉 9 (IONIQ 9, NE EV)
+브랜드: Hyundai (현대자동차)
+차급: 대형 전기 SUV (3열)
+연료: Electric (전기)
+생산연도: 2025–현재
+
+전기 파워트레인
+모터형식: Permanent Magnet Synchronous Motors (전기 모터)
+구동방식: RWD / AWD / Performance AWD
+배터리용량_kWh: 110.3 kWh (고전압 NCM 리튬이온)
+모터 최고출력_kW_ps:
+
+Long Range RWD: 약 160 kW (≈218 PS)
+
+Long Range AWD: 약 226 kW (≈307 PS)
+
+Performance AWD: 약 315 kW (≈428 PS)
+모터 최대토크_Nm:
+
+Long Range RWD: 약 350 Nm
+
+Long Range AWD: 약 605 Nm
+
+Performance AWD: 약 700 Nm
+변속기: 1단 감속기
+
+주행성능
+0to100_km_h_sec:
+
+Long Range RWD: 약 9.4 sec
+
+Long Range AWD: 약 6.7 sec
+
+Performance AWD: 약 5.2 sec
+최고속도_km_h: 약 190–200 km/h (사양별, Euro spec)
+주행가능거리_km:
+
+WLTP 기준 약 620 km (Long Range RWD)
+
+국내 실측 기준 약 503–532 km (AWD/19″)
+
+전비/효율
+전비_km_per_kWh: 약 4.0–5.2 km/kWh (모델/조건별 혼합 WLTP–정부치)
+에너지소비효율: 약 19.4–20.6 kWh/100 km (WLTP)
+
+충전
+급속충전_최대출력_kW: 약 233–350 kW (800 V DC 초급속 지원)
+완속충전_전압/전류: 약 11 kW AC Level 2
+10~80% 충전시간: 약 24–26 min (350 kW DC)
+완속충전시간: 약 8–10 hr (AC) (일반 Level 2 기준)
+
+차체/치수_mm
+전장: 약 5,060 mm
+전폭: 약 1,980 mm
+전고: 약 1,790 mm
+휠베이스: 약 3,130 mm
+
+타이어/브레이크
+타이어_앞: 19″ / 21″ 선택 가능
+타이어_뒤: 앞과 동일
+브레이크_앞: Ventilated Disc
+브레이크_뒤: Ventilated Disc
+
+중량/용량
+공차중량_kg: 약 2,500–2,700 kg (트림/사양별, 6~7인승)
+배터리용량_kWh: 110.3
+승차정원_인: 6–7 (좌석 구성 선택)
+
+운전자 보조/안전 (선택 주요)
+주요 ADAS: 스마트 크루즈 컨트롤, 차로 유지/추종 보조, 자동 긴급제동, 블라인드스팟 모니터 등 기본 ADAS, 서라운드 뷰 등 옵션 (모델/사양별)

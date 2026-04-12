@@ -1,0 +1,63 @@
+기본정보
+차종명: 아이오닉 6 (Ioniq 6, NE)
+브랜드: Hyundai (현대자동차)
+차급: 중형 전기 세단
+연료: Electric (전기)
+생산연도: 2021–현재
+
+전기 파워트레인
+모터형식: Permanent Magnet Synchronous Motor (전기 모터)
+구동방식: RWD (후륜구동) / AWD (사륜구동)
+배터리용량_kWh: 53.0 kWh (Standard Range) / 84.0 kWh (Long Range)
+모터 최고출력_kW_ps:
+
+Standard Range RWD: 약 111 kW (≈151 PS)
+
+Long Range RWD: 약 168 kW (≈229 PS)
+
+Long Range AWD: 약 239 kW (≈325 PS)
+모터 최대토크_Nm: 약 350–617 Nm (구동/사양별)
+변속기: 1단 감속기
+
+주행성능
+0to100_km_h_sec:
+
+Standard Range RWD: 약 8.8 sec
+
+Long Range AWD: 약 5.1–7.4 sec (사양별)
+최고속도_km_h: 약 185 km/h
+주행가능거리_km:
+
+Standard Range: 약 395–430 km WLTP 수준 추정
+
+Long Range: 약 480–562 km WLTP 수준 (18인치 기준)
+
+전비/효율
+전비_km_per_kWh: 약 4.0–5.5 km/kWh (구동/주행조건별)
+에너지소비효율: 약 140–220 Wh/km 범위 (환경/사양별)
+
+충전
+급속충전_최대출력_kW: 약 233–350 kW (800 V DC 초고속 충전 지원)
+완속충전_전압/전류: 약 11 kW AC Level 2
+10~80% 충전시간: 약 15–18 min (DC 급속)
+완속충전시간: 약 6–8 hrs (AC)
+
+차체/치수_mm
+전장: 약 4,635–4,710 mm (시장/트림별)
+전폭: 약 1,890 mm
+전고: 약 1,605 mm
+휠베이스: 약 3,000 mm
+
+타이어/브레이크
+타이어_앞: 18″ / 19″ / 20″ 선택 가능 (트림별)
+타이어_뒤: 앞과 동일
+브레이크_앞: Ventilated Disc
+브레이크_뒤: Disc
+
+중량/용량
+공차중량_kg: 약 1,900–2,100 kg (배터리/구동별)
+배터리용량_kWh: 53.0 / 84.0
+승차정원_인: 5
+
+운전자 보조/안전 (선택 주요)
+주요 ADAS: 스마트 크루즈 컨트롤, 차로 유지 보조, 자동 긴급제동 등 기본 EV ADAS
