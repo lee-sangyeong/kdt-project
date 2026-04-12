@@ -72,8 +72,3 @@ KDT-portfolio/
     ├── 자동차 리콜 발표 자료.pptx
     ├── data/
     │   └── 한국교통안전공단_자동차 리콜대수 및 시정률_20221231.csv
-    └── images/
-        ├── recall_by_vehicle_age.png
-        ├── recall_reason_by_age_group.png
-        ├── recall_heatmap.png
-        └── manufacturer_category_heatmap.png
