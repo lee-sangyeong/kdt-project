@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>01_삼보모터스 AI CNC 로봇팔 자동화 | 이상영 포트폴리오</title>
+  <link rel="stylesheet" href="./style.css">
+  <style>
+    html, body, .main, section, .hero, .card, .stat-card, .conclusion-item, .table-wrap, .pipeline, .pipe-step {
+      min-width: 0;
+    }
+    body {
+      overflow-wrap: break-word;
+    }
+    .hero h1,
+    .section-title {
+      letter-spacing: 0;
+    }
+    .hero-sub,
+    .card-body,
+    .conclusion-text,
+    .callout,
+    .results-table th,
+    .results-table td,
+    .pipe-sub,
+    .stat-label {
+      overflow-wrap: break-word;
+      word-break: keep-all;
+    }
+    code,
+    .path-code,
+    .url-text {
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .results-table {
+      table-layout: fixed;
+      min-width: 760px;
+    }
+    .preview-frame-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .preview-frame-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--muted);
+      font-family: "Space Mono", monospace;
+      font-size: 11px;
+    }
+    .preview-frame-head strong {
+      color: var(--text);
+      font-family: "Noto Sans KR", sans-serif;
+      font-size: 13px;
+    }
+    .dashboard-frame {
+      display: block;
+      width: 100%;
+      height: 680px;
+      border: 0;
+      background: #0d0f14;
+    }
+    .mini-list {
+      display: grid;
+      gap: 10px;
+    }
+    .mini-list p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13.8px;
+      line-height: 1.75;
+    }
+    .note-link {
+      color: #c5d8ff;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(197,216,255,.35);
+    }
+    .note-link:hover {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    @media (max-width: 1100px) {
+      .dashboard-frame {
+        height: 560px;
+      }
+    }
+    @media (max-width: 640px) {
+      .dashboard-frame {
+        height: 440px;
+      }
+      .preview-frame-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="sidenav">
+    <div class="sidenav-brand">
+      <div class="tag">Portfolio 01</div>
+      <h2>삼보모터스<br>AI CNC 자동화</h2>
+    </div>
+    <a class="nav-item active" href="#overview"><span class="dot"></span>개요</a>
+    <a class="nav-item" href="#vision"><span class="dot"></span>비전/좌표</a>
+    <a class="nav-item" href="#robot"><span class="dot"></span>IK/제어</a>
+    <a class="nav-item" href="#pipeline"><span class="dot"></span>파이프라인</a>
+    <a class="nav-item" href="#dashboard"><span class="dot"></span>대시보드</a>
+    <a class="nav-item" href="#result"><span class="dot"></span>검증</a>
+    <a class="nav-item" href="#business"><span class="dot"></span>기업 가치</a>
+  </nav>
+
+  <main class="main">
+    <header class="hero" id="overview">
+      <div class="hero-bg"></div>
+      <div class="hero-grid"></div>
+      <div class="hero-content">
+        <div class="hero-eyebrow">
+          <span class="badge badge-blue">AI Vision</span>
+          <span class="badge badge-green">Robot Arm</span>
+          <span class="badge badge-purple">CNC Machine Tending</span>
+        </div>
+        <h1>카메라가 본 부품 위치를 <span class="highlight">실제 로봇팔 동작</span>으로 연결한 AI CNC 자동화 PoC</h1>
+        <p class="hero-sub">
+          삼보모터스 기업 프로젝트는 ArduCam 64cm 기반 AI 비전, Hailo-8L 추론, 좌표 보정, IK, CAN 기반 임베디드 제어,
+          그리고 Three.js 디지털 트윈 대시보드를 연결해 파이프 CNC 투입·회수와 볼트/너트 이물 분류를 수행한 프로젝트입니다.
+        </p>
+        <div class="hero-meta">
+          <div class="meta-item">
+            <span class="meta-label">Camera</span>
+            <span class="meta-value">ArduCam OV9782 · 64cm</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Control</span>
+            <span class="meta-value">Raspberry Pi 5 · STM32 · CAN</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Dashboard</span>
+            <span class="meta-value">Three.js · WebSocket · GPT helper</span>
+          </div>
+        </div>
+        <div class="btn-row">
+          <a class="btn primary" href="https://app.notion.com/p/38e2dd033aaa8194b66cc8dc546d8706" target="_blank">Notion 원문</a>
+          <a class="btn" href="#dashboard">대시보드 미리보기</a>
+          <a class="btn" href="#business">기업 활용</a>
+        </div>
+      </div>
+    </header>
+
+    <section id="problem">
+      <div class="section-header">
+        <span class="section-num">01</span>
+        <h2 class="section-title">프로젝트 개요와 문제 정의</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="grid-4">
+        <div class="stat-card">
+          <div class="stat-num">64cm</div>
+          <div class="stat-label">ArduCam 기준 촬영 높이</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">6축</div>
+          <div class="stat-label">STS3215 로봇팔 + 그리퍼</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">CAN</div>
+          <div class="stat-label">Raspberry Pi ↔ STM32 제어</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">3D</div>
+          <div class="stat-label">Three.js 디지털 트윈</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-label">Business Problem</div>
+          <div class="card-title">위치가 매번 달라지는 부품을 로봇이 직접 보고 집어야 하는 문제</div>
+          <div class="card-body">
+            일반적인 고정 자동화는 부품이 항상 같은 위치에 있어야 안정적으로 동작합니다. 이 프로젝트는 작업대 위 파이프, 볼트, 너트의 위치와 방향이 바뀌어도
+            AI 비전으로 물체를 찾고 실제 로봇팔 좌표로 변환해 피킹·투입·회수 동작까지 이어지도록 구성했습니다.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label">Portfolio Position</div>
+          <div class="card-title">비전, 좌표 보정, 임베디드 제어, 대시보드를 한 흐름으로 연결</div>
+          <div class="card-body">
+            단순히 로봇팔을 움직이는 시연이 아니라, 카메라 캘리브레이션, Homography, 로봇팔 기준 좌표 보정, IK, 실제 모터각 보정,
+            CAN 명령, ToF 파지 확인, 디지털 트윈 대시보드까지 제조 자동화 셀의 핵심 흐름을 통합했습니다.
+          </div>
+        </div>
+      </div>
+      <div class="callout callout-info">
+        <strong>정리 기준:</strong> 기술 상세는 최종 시연 프로젝트 파일의 <code>arducam_auto</code>를 기준으로 작성했고,
+        대시보드는 <code>삼보/sambo_robot/dashboard</code>의 실제 실행 파일과 서버 구성을 함께 반영했습니다.
+      </div>
+    </section>
+
+    <section id="vision">
+      <div class="section-header">
+        <span class="section-num">02</span>
+        <h2 class="section-title">ArduCam 비전과 좌표 보정</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="table-wrap">
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>구분</th>
+              <th>확인한 파일 / 설정</th>
+              <th>역할</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>카메라</td>
+              <td>ArduCam OV9782, YUYV 1280x720, 작업대 약 64cm</td>
+              <td>작업대 전체를 촬영하고 파이프·볼트·너트 후보를 검출합니다.</td>
+            </tr>
+            <tr>
+              <td>AI 추론</td>
+              <td><code>best_pose_512.hef</code>, <code>detect_pose_hailo.py</code></td>
+              <td>Hailo-8L에서 YOLO pose 모델을 실행해 물체 중심과 방향을 추출합니다.</td>
+            </tr>
+            <tr>
+              <td>렌즈 보정</td>
+              <td><code>camera_calib.npz</code></td>
+              <td>렌즈 왜곡으로 휘어진 화면을 보정해 좌표 오차를 줄입니다.</td>
+            </tr>
+            <tr>
+              <td>픽셀 → 작업대</td>
+              <td><code>homography_64cm.npz</code></td>
+              <td>이미지 픽셀 위치를 작업대의 실제 mm 좌표로 변환합니다.</td>
+            </tr>
+            <tr>
+              <td>작업대 → 로봇팔</td>
+              <td><code>ik_pose.py</code>, <code>H_ARM_POSE</code>, RBF 보정</td>
+              <td>작업대 좌표를 로봇팔 M1 중심 기준 좌표로 다시 맞춥니다.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="divider"></div>
+      <div class="pipeline">
+        <div class="pipe-step">
+          <div class="pipe-icon">01</div>
+          <div class="pipe-title">촬영</div>
+          <div class="pipe-sub">ArduCam OV9782 프레임 수집</div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-icon">02</div>
+          <div class="pipe-title">검출</div>
+          <div class="pipe-sub">Hailo YOLO pose 후보 선택</div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-icon">03</div>
+          <div class="pipe-title">보정</div>
+          <div class="pipe-sub">렌즈 왜곡과 Homography 적용</div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-icon">04</div>
+          <div class="pipe-title">좌표 변환</div>
+          <div class="pipe-sub">M1 기준 로봇 좌표로 변환</div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-icon">05</div>
+          <div class="pipe-title">전달</div>
+          <div class="pipe-sub">IK와 pick runner로 목표 전달</div>
+        </div>
+      </div>
+      <div class="callout callout-success">
+        <strong>핵심:</strong> 이 프로젝트에서 중요한 데이터는 단순히 사진 속 좌표가 아니라,
+        실제 로봇팔이 물체를 잡을 수 있는 M1 기준 좌표와 성공 모터각으로 보정된 결과입니다.
+      </div>
+    </section>
+
+    <section id="robot">
+      <div class="section-header">
+        <span class="section-num">03</span>
+        <h2 class="section-title">IK와 실제 모터 제어</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-label">Inverse Kinematics</div>
+          <div class="card-title">이론 관절각을 실제 자작 로봇팔의 모터각으로 보정</div>
+          <div class="card-body">
+            <code>ik.py</code>는 링크 길이, <code>solve_pick</code>, <code>solve_ik</code>, 그리고 M1~M6의 OFFSET/GAIN 보정값을 사용합니다.
+            이론 IK 값만으로는 자작 로봇팔의 조립 오차와 회전 방향 차이를 맞출 수 없기 때문에, 실제 성공 모터각을 기준으로 명령각을 보정했습니다.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label">Embedded Control</div>
+          <div class="card-title">Raspberry Pi가 판단하고 STM32가 서보와 그리퍼를 구동</div>
+          <div class="card-body">
+            Raspberry Pi 5는 AI 검출과 자동 워크플로우를 담당하고, CAN 명령으로 STM32에 목표 동작을 전달합니다.
+            STM32는 STS3215 6축 서보, 그리퍼, 상태 피드백을 처리하며, Arduino Nano는 VL53L0X ToF 센서 정보를 CAN으로 전달합니다.
+          </div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="table-wrap">
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>단계</th>
+              <th>기술</th>
+              <th>의미</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>목표 좌표 입력</td>
+              <td>로봇팔 M1 기준 <code>x, y, z</code></td>
+              <td>카메라 좌표가 아니라 로봇이 실제로 움직일 수 있는 기준 좌표입니다.</td>
+            </tr>
+            <tr>
+              <td>IK 계산</td>
+              <td><code>solve_pick</code>, <code>solve_ik</code></td>
+              <td>목표 위치에 도달하기 위한 이론 관절각을 계산합니다.</td>
+            </tr>
+            <tr>
+              <td>모터각 보정</td>
+              <td><code>cmd = OFFSET + GAIN * theta</code></td>
+              <td>수학 관절각을 실제 서보 명령각으로 바꿉니다.</td>
+            </tr>
+            <tr>
+              <td>안전 제한</td>
+              <td><code>check_limits</code>, 관절별 범위 제한</td>
+              <td>기구적으로 위험한 각도 명령을 제한합니다.</td>
+            </tr>
+            <tr>
+              <td>파지 확인</td>
+              <td>VL53L0X ToF, 그리퍼 상태</td>
+              <td>물체를 실제로 잡았는지 확인하는 센서 기반 흐름입니다.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="pipeline">
+      <div class="section-header">
+        <span class="section-num">04</span>
+        <h2 class="section-title">자동 공정 파이프라인</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="pipeline">
+        <div class="pipe-step">
+          <div class="pipe-icon">01</div>
+          <div class="pipe-title">상태 확인</div>
+          <div class="pipe-sub">CNC가 비었는지, 가공 중인지 판단</div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-icon">02</div>
+          <div class="pipe-title">파이프 투입</div>
+          <div class="pipe-sub">검출·IK 후 CNC 위치로 소재 공급</div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-icon">03</div>
+          <div class="pipe-title">이물 분류</div>
+          <div class="pipe-sub">가공 대기 시간에 볼트/너트 제거</div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-icon">04</div>
+          <div class="pipe-title">회수</div>
+          <div class="pipe-sub">타이머 이후 CNC에서 파이프 회수</div>
+        </div>
+        <div class="pipe-step">
+          <div class="pipe-icon">05</div>
+          <div class="pipe-title">적재</div>
+          <div class="pipe-sub">V홈 랙 또는 지정 위치에 정렬</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="table-wrap">
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>상태</th>
+              <th>동작</th>
+              <th>기업 관점 의미</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>CNC가 비어 있음</td>
+              <td>파이프를 우선 검출해 CNC에 투입</td>
+              <td>가공 장비가 쉬지 않도록 소재 공급을 우선합니다.</td>
+            </tr>
+            <tr>
+              <td>CNC 가공 중</td>
+              <td>파이프를 제외하고 볼트/너트만 분류</td>
+              <td>가공 대기 시간을 활용해 주변 이물을 제거합니다.</td>
+            </tr>
+            <tr>
+              <td>타이머 만료</td>
+              <td>CNC에서 완성 파이프 회수</td>
+              <td>투입뿐 아니라 회수까지 포함한 머신텐딩 흐름입니다.</td>
+            </tr>
+            <tr>
+              <td>회수 완료</td>
+              <td>V홈 적재함에 적재</td>
+              <td>다음 작업 또는 검사 대기 위치로 정렬합니다.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="dashboard">
+      <div class="section-header">
+        <span class="section-num">05</span>
+        <h2 class="section-title">대시보드 실행과 미리보기</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="preview-frame-wrap">
+        <div class="preview-frame-head">
+          <strong>Local Dashboard Preview</strong>
+          <span class="url-text">http://127.0.0.1:8766/</span>
+        </div>
+        <iframe class="dashboard-frame" src="http://127.0.0.1:8766/" title="삼보모터스 로봇팔 대시보드 미리보기"></iframe>
+      </div>
+      <div class="divider"></div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-label">Run Script</div>
+          <div class="card-title">대시보드_실행.bat 기준 실행</div>
+          <div class="card-body">
+            실제 대시보드는 <code>삼보/sambo_robot/dashboard/대시보드_실행.bat</code>가 여는
+            <a class="note-link" href="http://127.0.0.1:8766/" target="_blank">http://127.0.0.1:8766/</a> 주소 기준입니다.
+            이 HTML을 로컬 브라우저에서 열고 배치 파일 서버가 살아 있으면 위 미리보기 영역에 대시보드가 표시됩니다.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label">Notion Embed Note</div>
+          <div class="card-title">노션 공개 임베드는 로컬 주소만으로는 제한됨</div>
+          <div class="card-body">
+            Notion은 HTTPS 페이지 안에서 <code>127.0.0.1</code> 로컬 HTTP 서버를 안정적으로 임베드하지 못합니다.
+            공개 포트폴리오에서 미리보기를 보여주려면 정적 HTML을 GitHub Pages/HTMLPreview에 올리거나,
+            대시보드 캡처 이미지를 외부에서 접근 가능한 이미지 URL로 연결해야 합니다.
+          </div>
+        </div>
+      </div>
+      <div class="callout callout-warn">
+        <strong>안전 메모:</strong> 실시간 로봇 제어 대시보드를 외부 터널로 공개하면 로컬 상태와 제어 기능이 노출될 수 있습니다.
+        공개 포트폴리오에는 실시간 제어 화면보다 캡처 이미지나 정적 데모 HTML을 사용하는 방식이 안전합니다.
+      </div>
+    </section>
+
+    <section id="result">
+      <div class="section-header">
+        <span class="section-num">06</span>
+        <h2 class="section-title">검증 결과와 파일 근거</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="table-wrap">
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>확인한 값 / 파일</th>
+              <th>해석</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>비전 검출</td>
+              <td><code>detect_pose_hailo.py</code>, <code>best_pose_512.hef</code></td>
+              <td>Hailo 추론, 물체 후보 선택, grasp point 계산 흐름이 포함되어 있습니다.</td>
+            </tr>
+            <tr>
+              <td>좌표 보정</td>
+              <td><code>camera_calib.npz</code>, <code>homography_64cm.npz</code>, <code>ik_pose.py</code></td>
+              <td>렌즈 보정, 픽셀→작업대 좌표, 작업대→로봇팔 좌표 변환을 담당합니다.</td>
+            </tr>
+            <tr>
+              <td>IK/모터각 보정</td>
+              <td><code>ik.py</code>, <code>M*_OFFSET</code>, <code>M*_GAIN</code></td>
+              <td>이론 관절각을 실제 서보 명령각으로 바꾸는 보정층입니다.</td>
+            </tr>
+            <tr>
+              <td>자동 워크플로우</td>
+              <td><code>auto_runner_workflow.py</code></td>
+              <td>파이프 투입, 이물 분류, CNC 회수, 랙 적재 흐름을 구성합니다.</td>
+            </tr>
+            <tr>
+              <td>실제 티칭값</td>
+              <td><code>삼보/sambo_robot/dashboard/teach_poses.json</code></td>
+              <td>CNC 투입/회수, V홈 랙, 볼트 위치 등 실제 저장 포즈가 들어 있습니다.</td>
+            </tr>
+            <tr>
+              <td>대시보드</td>
+              <td><code>sambo_robot_arm_dashboard.html</code>, <code>sambo_dashboard_gpt_server.py</code></td>
+              <td>3D 로봇팔, 상태 표시, 수동 제어, GPT 설명 도우미 서버를 포함합니다.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="business">
+      <div class="section-header">
+        <span class="section-num">07</span>
+        <h2 class="section-title">한계, 개선 방향, 기업 관점의 의미</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="insight">
+        <div class="insight-text">
+          이 프로젝트의 핵심 가치는 로봇팔을 한 번 움직인 것이 아니라,
+          카메라 검출 결과를 실제 제조 공정 좌표와 로봇 제어로 연결하는 방법론을 구현했다는 점에 있습니다.
+        </div>
+        <div class="insight-attr">— 삼보모터스 AI CNC 로봇팔 자동화 프로젝트 정리</div>
+      </div>
+      <div class="divider"></div>
+      <div class="conclusion-grid">
+        <div class="conclusion-item">
+          <div class="conclusion-title">현재 한계</div>
+          <div class="conclusion-text">
+            자작 로봇팔은 산업용 로봇 수준의 반복정밀도와 강성을 바로 기대하기 어렵습니다.
+            실제 공장 도입 전에는 산업용 로봇, 고강성 프레임, 안전 펜스, 인터락, 비상정지 체계가 필요합니다.
+          </div>
+        </div>
+        <div class="conclusion-item">
+          <div class="conclusion-title">개선 방향</div>
+          <div class="conclusion-text">
+            실제 삼보 Pipe Part 또는 Plate 공정 부품으로 재라벨링·재학습·재캘리브레이션을 수행하고,
+            조명·반사·먼지·진동 등 현장 환경 변수를 4주 파일럿으로 측정해야 합니다.
+          </div>
+        </div>
+        <div class="conclusion-item">
+          <div class="conclusion-title">기업 가치</div>
+          <div class="conclusion-text">
+            위치와 방향이 달라지는 부품을 인식해 대응하는 비전 기반 유연 자동화 PoC입니다.
+            반복 피킹, 방향 정렬, 검사 투입 보조, 오투입 방지 공정으로 확장할 수 있습니다.
+          </div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="tech-tags">
+        <span class="tech-tag">ArduCam OV9782</span>
+        <span class="tech-tag">Hailo-8L</span>
+        <span class="tech-tag">YOLO Pose</span>
+        <span class="tech-tag">OpenCV Calibration</span>
+        <span class="tech-tag">Homography</span>
+        <span class="tech-tag">RBF Correction</span>
+        <span class="tech-tag">Inverse Kinematics</span>
+        <span class="tech-tag">Raspberry Pi 5</span>
+        <span class="tech-tag">STM32 NUCLEO-F103RB</span>
+        <span class="tech-tag">Arduino Nano</span>
+        <span class="tech-tag">CAN</span>
+        <span class="tech-tag">SocketCAN</span>
+        <span class="tech-tag">STS3215</span>
+        <span class="tech-tag">VL53L0X ToF</span>
+        <span class="tech-tag">Three.js</span>
+        <span class="tech-tag">WebSocket</span>
+        <span class="tech-tag">Digital Twin</span>
+      </div>
+    </section>
+
+    <footer class="footer">01_삼보모터스 AI CNC 로봇팔 자동화 | 이상영 KDT Portfolio</footer>
+  </main>
+</body>
+</html>
