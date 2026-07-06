@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>삼보모터스 로봇팔 대시보드 정적 미리보기</title>
+  <style>
+    :root {
+      --bg: #07101b;
+      --panel: #0c1724;
+      --panel2: #111f31;
+      --line: rgba(135, 215, 255, .18);
+      --text: #e8f4ff;
+      --muted: #83a2bb;
+      --blue: #57a6ff;
+      --green: #35d07f;
+      --amber: #f4c84d;
+      --red: #ff5d6c;
+      --cyan: #55e6ff;
+      --mono: "Cascadia Mono", Consolas, monospace;
+      --sans: "Segoe UI", "Noto Sans KR", "Malgun Gothic", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-width: 0; }
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(85,230,255,.12), transparent 34%),
+        radial-gradient(circle at 80% 30%, rgba(87,166,255,.16), transparent 36%),
+        var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      overflow-wrap: break-word;
+    }
+    .shell { min-height: 100vh; display: grid; grid-template-rows: auto auto 1fr auto; }
+    .topbar {
+      height: 74px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 22px;
+      background: rgba(7,16,27,.94);
+      border-bottom: 1px solid var(--line);
+    }
+    .brand { min-width: 220px; }
+    .brand small { display: block; color: var(--muted); font: 700 10px/1 var(--mono); letter-spacing: 1.6px; }
+    .brand strong { display: block; margin-top: 5px; font-size: 18px; line-height: 1.15; }
+    .controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .run-btn {
+      height: 42px;
+      min-width: 96px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      font-weight: 900;
+      font-size: 13px;
+      background: var(--panel2);
+    }
+    .run-btn.start { color: #c8ffe0; border-color: rgba(53,208,127,.45); background: rgba(53,208,127,.12); }
+    .run-btn.stop { color: #ffe7a6; border-color: rgba(244,200,77,.45); background: rgba(244,200,77,.12); }
+    .run-btn.end { color: #ffc0c7; border-color: rgba(255,93,108,.45); background: rgba(255,93,108,.12); }
+    .status-row { display: flex; align-items: center; gap: 9px; flex: 1; min-width: 280px; }
+    .chip {
+      height: 42px;
+      min-width: 142px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(12,23,36,.9);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: currentColor; box-shadow: 0 0 14px currentColor; }
+    .ok { color: var(--green); }
+    .warn { color: var(--amber); }
+    .wait { color: var(--blue); }
+    .clock { min-width: 95px; text-align: right; font: 900 22px/1 var(--mono); }
+    .clock small { display: block; color: var(--muted); font: 700 10px/1.2 var(--mono); margin-bottom: 5px; }
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 22px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(12,23,36,.74);
+    }
+    .tabs, .tools { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tab, .tool {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      background: rgba(17,31,49,.85);
+    }
+    .tab.active { color: var(--cyan); border-color: rgba(85,230,255,.44); background: rgba(85,230,255,.1); }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      grid-template-rows: auto minmax(0, 1fr) 176px;
+      gap: 14px;
+      padding: 16px 22px 22px;
+      min-height: 720px;
+    }
+    .steps {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(9, minmax(80px, 1fr));
+      gap: 8px;
+    }
+    .step {
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 10px;
+      background: rgba(12,23,36,.88);
+      min-width: 0;
+    }
+    .step b { display: block; color: var(--cyan); font: 900 12px/1 var(--mono); margin-bottom: 6px; }
+    .step span { display: block; color: var(--muted); font-size: 11px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .step.active { border-color: rgba(53,208,127,.6); box-shadow: 0 0 0 1px rgba(53,208,127,.15) inset; }
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr);
+      gap: 14px;
+      min-width: 0;
+    }
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(12,23,36,.88);
+      overflow: hidden;
+      min-width: 0;
+    }
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .panel-head small { color: var(--muted); font: 700 10px/1 var(--mono); }
+    .camera-view, .twin-view {
+      min-height: 420px;
+      position: relative;
+      background:
+        linear-gradient(rgba(85,230,255,.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(85,230,255,.08) 1px, transparent 1px),
+        #08121e;
+      background-size: 34px 34px;
+    }
+    .target {
+      position: absolute;
+      left: 48%;
+      top: 48%;
+      width: 150px;
+      height: 56px;
+      transform: translate(-50%, -50%) rotate(-12deg);
+      border: 2px solid var(--green);
+      border-radius: 32px;
+      box-shadow: 0 0 24px rgba(53,208,127,.35);
+    }
+    .target:before { content: "PIPE 94%"; position: absolute; left: 14px; top: -27px; color: var(--green); font: 900 12px/1 var(--mono); }
+    .axis { position: absolute; right: 16px; bottom: 14px; color: var(--muted); font: 700 11px/1.5 var(--mono); }
+    .robot {
+      position: absolute;
+      left: 50%;
+      bottom: 58px;
+      width: 300px;
+      height: 260px;
+      transform: translateX(-50%);
+    }
+    .base, .joint, .arm, .gripper {
+      position: absolute;
+      border: 1px solid rgba(85,230,255,.5);
+      background: linear-gradient(135deg, rgba(87,166,255,.28), rgba(85,230,255,.08));
+      box-shadow: 0 0 22px rgba(85,230,255,.12);
+    }
+    .base { width: 140px; height: 34px; left: 80px; bottom: 0; border-radius: 10px; }
+    .joint { width: 54px; height: 54px; border-radius: 50%; left: 123px; bottom: 32px; }
+    .arm.one { width: 34px; height: 130px; left: 135px; bottom: 78px; transform: rotate(-26deg); transform-origin: bottom center; border-radius: 18px; }
+    .arm.two { width: 34px; height: 112px; left: 197px; bottom: 160px; transform: rotate(48deg); transform-origin: bottom center; border-radius: 18px; }
+    .gripper { width: 68px; height: 28px; right: 12px; top: 33px; border-radius: 8px; }
+    .right-stack { display: grid; gap: 14px; min-width: 0; }
+    .metric-list { display: grid; gap: 9px; padding: 12px; }
+    .metric { display: grid; grid-template-columns: 72px minmax(0, 1fr) 48px; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; font-weight: 800; }
+    .bar { height: 8px; background: rgba(255,255,255,.08); border-radius: 99px; overflow: hidden; }
+    .fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--cyan)); border-radius: inherit; }
+    .bottom {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 300px minmax(0, 1fr) 360px;
+      gap: 14px;
+      min-width: 0;
+    }
+    .big-num { padding: 18px; font: 900 42px/1 var(--mono); color: var(--cyan); }
+    .big-num small { display: block; color: var(--muted); font: 800 12px/1.2 var(--sans); margin-top: 8px; }
+    .log { padding: 12px; color: var(--muted); font: 700 12px/1.8 var(--mono); }
+    .static-note {
+      margin: 0 22px 20px;
+      border: 1px solid rgba(244,200,77,.35);
+      border-left: 4px solid var(--amber);
+      border-radius: 10px;
+      background: rgba(244,200,77,.08);
+      color: #ffe7a6;
+      padding: 12px 14px;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+    @media (max-width: 1180px) {
+      .topbar, .toolbar { align-items: flex-start; flex-direction: column; height: auto; }
+      .layout { grid-template-columns: 1fr; grid-template-rows: auto auto auto auto; }
+      .workspace { grid-template-columns: 1fr; }
+      .right-stack { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .bottom { grid-template-columns: 1fr; }
+      .steps { overflow-x: auto; grid-template-columns: repeat(9, 120px); }
+    }
+    @media (max-width: 720px) {
+      .right-stack { grid-template-columns: 1fr; }
+      .status-row, .controls { width: 100%; }
+      .chip, .run-btn { flex: 1 1 130px; min-width: 0; }
+      .camera-view, .twin-view { min-height: 340px; }
+      .robot { transform: translateX(-50%) scale(.82); transform-origin: bottom center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <small>SAMBO MOTORS</small>
+        <strong>로봇팔 자동 분류 대시보드</strong>
+      </div>
+      <div class="controls">
+        <div class="run-btn start">▶ 시작</div>
+        <div class="run-btn stop">⏸ 정지</div>
+        <div class="run-btn end">■ 종료</div>
+      </div>
+      <div class="status-row">
+        <div class="chip ok"><span class="dot"></span>서버 연결</div>
+        <div class="chip ok"><span class="dot"></span>CAN OK</div>
+        <div class="chip wait"><span class="dot"></span>카메라 대기</div>
+        <div class="chip ok"><span class="dot"></span>AI 준비</div>
+      </div>
+      <div class="clock"><small>LOCAL TIME</small>23:14</div>
+    </header>
+
+    <nav class="toolbar">
+      <div class="tabs">
+        <div class="tab active">자동 운전</div>
+        <div class="tab">수동 시험</div>
+      </div>
+      <div class="tools">
+        <div class="tool">운전 준비 점검</div>
+        <div class="tool">시스템 연결도</div>
+        <div class="tool">통신 상세</div>
+        <div class="tool">AI 작업 도우미</div>
+      </div>
+    </nav>
+
+    <main class="layout">
+      <section class="steps" aria-label="자동 운전 단계">
+        <div class="step"><b>01</b><span>HOME 복귀</span></div>
+        <div class="step"><b>02</b><span>스캔 중</span></div>
+        <div class="step active"><b>03</b><span>물체 감지</span></div>
+        <div class="step"><b>04</b><span>집기 전 접근</span></div>
+        <div class="step"><b>05</b><span>집기</span></div>
+        <div class="step"><b>06</b><span>들어 올리기</span></div>
+        <div class="step"><b>07</b><span>운반</span></div>
+        <div class="step"><b>08</b><span>분류통 배치</span></div>
+        <div class="step"><b>09</b><span>사이클 종료</span></div>
+      </section>
+
+      <section class="workspace">
+        <div class="panel">
+          <div class="panel-head">그리퍼 카메라 <small>AI VISION</small></div>
+          <div class="camera-view">
+            <div class="target"></div>
+            <div class="axis">x +12.4 mm<br>y -8.7 mm<br>angle -12°</div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">3D 디지털 트윈 <small>ROBOT POSE</small></div>
+          <div class="twin-view">
+            <div class="robot">
+              <div class="base"></div>
+              <div class="joint"></div>
+              <div class="arm one"></div>
+              <div class="arm two"></div>
+              <div class="gripper"></div>
+            </div>
+            <div class="axis">M1 184° · M2 127° · M3 94°<br>M4 181° · M5 88° · M6 162°</div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="right-stack">
+        <div class="panel">
+          <div class="panel-head">관절 상태 <small>6 AXIS</small></div>
+          <div class="metric-list">
+            <div class="metric"><span>M1</span><div class="bar"><div class="fill" style="width:68%"></div></div><b>184°</b></div>
+            <div class="metric"><span>M2</span><div class="bar"><div class="fill" style="width:51%"></div></div><b>127°</b></div>
+            <div class="metric"><span>M3</span><div class="bar"><div class="fill" style="width:42%"></div></div><b>94°</b></div>
+            <div class="metric"><span>M4</span><div class="bar"><div class="fill" style="width:67%"></div></div><b>181°</b></div>
+            <div class="metric"><span>M5</span><div class="bar"><div class="fill" style="width:39%"></div></div><b>88°</b></div>
+            <div class="metric"><span>M6</span><div class="bar"><div class="fill" style="width:61%"></div></div><b>162°</b></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">모터 상태 <small>TELEMETRY</small></div>
+          <div class="metric-list">
+            <div class="metric"><span>온도</span><div class="bar"><div class="fill" style="width:36%"></div></div><b>38°C</b></div>
+            <div class="metric"><span>부하</span><div class="bar"><div class="fill" style="width:42%"></div></div><b>42%</b></div>
+            <div class="metric"><span>지연</span><div class="bar"><div class="fill" style="width:18%"></div></div><b>12ms</b></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">분류 현황 <small>CYCLE</small></div>
+          <div class="metric-list">
+            <div class="metric"><span>Pipe</span><div class="bar"><div class="fill" style="width:70%"></div></div><b>7</b></div>
+            <div class="metric"><span>Bolt</span><div class="bar"><div class="fill" style="width:40%"></div></div><b>4</b></div>
+            <div class="metric"><span>Nut</span><div class="bar"><div class="fill" style="width:30%"></div></div><b>3</b></div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="bottom">
+        <div class="panel">
+          <div class="panel-head">ToF 거리 <small>GRIPPER</small></div>
+          <div class="big-num">42mm<small>파지 가능 구간</small></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">CAN / WebSocket 상태 <small>BRIDGE</small></div>
+          <div class="log">RX 0x201 · joint telemetry<br>RX 0x300 · ToF distance<br>TX 0x100 · motion command<br>상태: 연결 정상, 지연 12ms</div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">이벤트 로그 <small>RECENT</small></div>
+          <div class="log">[23:14:02] AUTO RUN 준비<br>[23:14:04] PIPE target stable<br>[23:14:06] IK solution valid<br>[23:14:07] PRE_GRASP command queued</div>
+        </div>
+      </section>
+    </main>
+
+    <div class="static-note">
+      이 페이지는 포트폴리오 공개용 정적 미리보기입니다. 실제 로봇 제어, WebSocket, CAN 명령, GPT 서버 호출은 포함하지 않았습니다.
+      실제 실행은 로컬 PC에서 <strong>대시보드_실행.bat</strong>를 통해 <strong>http://127.0.0.1:8766/</strong> 주소로 확인합니다.
+    </div>
+  </div>
+</body>
+</html>
