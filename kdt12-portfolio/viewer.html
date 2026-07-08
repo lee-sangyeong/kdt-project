@@ -13,6 +13,66 @@
 <body>
   <div class="loading"><b>Loading portfolio...</b><br>HTML portfolio is being prepared.</div>
   <script>
+    function portfolioScrollSpy() {
+      if (window.__portfolioScrollSpyReady) return;
+      window.__portfolioScrollSpyReady = true;
+
+      const navItems = Array.from(document.querySelectorAll('.sidenav .nav-item[href^="#"]'));
+      if (!navItems.length) return;
+
+      const linkById = new Map();
+      navItems.forEach((item) => {
+        const href = item.getAttribute('href') || '';
+        const id = decodeURIComponent(href.slice(1));
+        if (!id) return;
+        const target = document.getElementById(id);
+        if (!target) return;
+        linkById.set(id, item);
+        item.addEventListener('click', () => setActive(item), { passive: true });
+      });
+
+      const sections = Array.from(linkById.keys())
+        .map((id) => document.getElementById(id))
+        .filter(Boolean);
+      if (!sections.length) return;
+
+      function setActive(activeItem) {
+        navItems.forEach((item) => {
+          const isActive = item === activeItem;
+          item.classList.toggle('active', isActive);
+          item.setAttribute('aria-current', isActive ? 'true' : 'false');
+        });
+      }
+
+      function updateActiveSection() {
+        const triggerLine = Math.min(window.innerHeight * 0.36, 280);
+        let current = sections[0];
+
+        sections.forEach((section) => {
+          const rect = section.getBoundingClientRect();
+          if (rect.top <= triggerLine && rect.bottom > 80) current = section;
+        });
+
+        const activeItem = linkById.get(current.id);
+        if (activeItem) setActive(activeItem);
+      }
+
+      let ticking = false;
+      function requestUpdate() {
+        if (ticking) return;
+        ticking = true;
+        window.requestAnimationFrame(() => {
+          ticking = false;
+          updateActiveSection();
+        });
+      }
+
+      window.addEventListener('scroll', requestUpdate, { passive: true });
+      window.addEventListener('resize', requestUpdate);
+      window.addEventListener('hashchange', () => window.setTimeout(updateActiveSection, 80));
+      updateActiveSection();
+    }
+
     (async () => {
       const params = new URLSearchParams(location.hash.replace(/^#/, ''));
       const file = params.get('file');
@@ -23,19 +83,28 @@
       }
 
       const match = location.search.match(/\/blob\/([0-9a-f]{40})\/kdt12-portfolio\/viewer\.html/i);
-      const commit = match ? match[1] : '1bfbad468ea20af31d486f82ee20f0c23f58d1b2';
-      const rawUrl = `https://raw.githubusercontent.com/lee-sangyeong/kdt-project/${commit}/kdt12-portfolio/${file}`;
+      const commit = match ? match[1] : '77af87264ecccdf97664aec446f1bf1c9e0cf29b';
+      const assetBase = `https://raw.githubusercontent.com/lee-sangyeong/kdt-project/${commit}/kdt12-portfolio/`;
+      const rawUrl = `${assetBase}${file}`;
 
       try {
         const response = await fetch(rawUrl, { cache: 'no-store' });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         let html = await response.text();
-        const scriptTag = '<script src="./scrollspy.js" defer><\\/script>';
-        if (!html.includes('scrollspy.js')) {
+        const baseTag = `<base href="${assetBase}">`;
+        if (!/<base\s/i.test(html)) {
+          html = html.includes('<head>')
+            ? html.replace('<head>', `<head>${baseTag}`)
+            : `${baseTag}${html}`;
+        }
+
+        const scriptTag = `<script>(${portfolioScrollSpy.toString()})();<\\/script>`;
+        if (!html.includes('__portfolioScrollSpyReady')) {
           html = html.includes('</body>')
             ? html.replace('</body>', `${scriptTag}</body>`)
             : `${html}${scriptTag}`;
         }
+
         document.open();
         document.write(html);
         document.close();
