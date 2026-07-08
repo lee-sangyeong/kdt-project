@@ -101,9 +101,17 @@
         document.documentElement.lang = parsed.documentElement.lang || 'ko';
         document.title = parsed.title || document.title;
         document.head.innerHTML = parsed.head.innerHTML;
-        document.body.innerHTML = parsed.body.innerHTML;
+
+        const loading = document.querySelector('.loading');
+        if (loading) loading.remove();
+        Array.from(document.body.attributes).forEach((attr) => document.body.removeAttribute(attr.name));
+        Array.from(parsed.body.attributes).forEach((attr) => document.body.setAttribute(attr.name, attr.value));
+        Array.from(parsed.body.childNodes).forEach((node) => {
+          document.body.appendChild(document.importNode(node, true));
+        });
+
         window.__portfolioScrollSpyReady = false;
-        window.setTimeout(portfolioScrollSpy, 0);
+        portfolioScrollSpy();
       } catch (error) {
         document.body.innerHTML = `<div class="loading"><b>Portfolio load failed.</b><br>${String(error.message || error)}</div>`;
       }
