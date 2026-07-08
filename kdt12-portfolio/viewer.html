@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Portfolio Viewer</title>
+  <style>
+    body{margin:0;background:#0d0f14;color:#e8eaf0;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;display:grid;place-items:center}
+    .loading{max-width:520px;padding:28px;border:1px solid rgba(255,255,255,.1);border-radius:16px;background:#13161e;text-align:center;line-height:1.7}
+    .loading b{color:#8ea4ff}
+  </style>
+</head>
+<body>
+  <div class="loading"><b>Loading portfolio...</b><br>HTML portfolio is being prepared.</div>
+  <script>
+    (async () => {
+      const params = new URLSearchParams(location.hash.replace(/^#/, ''));
+      const file = params.get('file');
+      const allowed = /^[0-9a-zA-Z._-]+\.html$/.test(file || '');
+      if (!allowed) {
+        document.body.innerHTML = '<div class="loading"><b>Portfolio file is missing.</b></div>';
+        return;
+      }
+
+      const match = location.search.match(/\/blob\/([0-9a-f]{40})\/kdt12-portfolio\/viewer\.html/i);
+      const commit = match ? match[1] : '1bfbad468ea20af31d486f82ee20f0c23f58d1b2';
+      const rawUrl = `https://raw.githubusercontent.com/lee-sangyeong/kdt-project/${commit}/kdt12-portfolio/${file}`;
+
+      try {
+        const response = await fetch(rawUrl, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        let html = await response.text();
+        const scriptTag = '<script src="./scrollspy.js" defer><\\/script>';
+        if (!html.includes('scrollspy.js')) {
+          html = html.includes('</body>')
+            ? html.replace('</body>', `${scriptTag}</body>`)
+            : `${html}${scriptTag}`;
+        }
+        document.open();
+        document.write(html);
+        document.close();
+      } catch (error) {
+        document.body.innerHTML = `<div class="loading"><b>Portfolio load failed.</b><br>${String(error.message || error)}</div>`;
+      }
+    })();
+  </script>
+</body>
+</html>
