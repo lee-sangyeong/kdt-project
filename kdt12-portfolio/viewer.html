@@ -97,9 +97,12 @@
             : `${baseTag}${html}`;
         }
 
-        document.open();
-        document.write(html);
-        document.close();
+        const parsed = new DOMParser().parseFromString(html, 'text/html');
+        document.documentElement.lang = parsed.documentElement.lang || 'ko';
+        document.title = parsed.title || document.title;
+        document.head.innerHTML = parsed.head.innerHTML;
+        document.body.innerHTML = parsed.body.innerHTML;
+        window.__portfolioScrollSpyReady = false;
         window.setTimeout(portfolioScrollSpy, 0);
       } catch (error) {
         document.body.innerHTML = `<div class="loading"><b>Portfolio load failed.</b><br>${String(error.message || error)}</div>`;
