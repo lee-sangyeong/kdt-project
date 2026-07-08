@@ -24,10 +24,8 @@
       navItems.forEach((item) => {
         const href = item.getAttribute('href') || '';
         const id = decodeURIComponent(href.slice(1));
-        if (!id) return;
-        const target = document.getElementById(id);
-        if (!target) return;
-        linkById.set(id, item);
+        const target = id ? document.getElementById(id) : null;
+        if (target) linkById.set(id, item);
         item.addEventListener('click', () => setActive(item), { passive: true });
       });
 
@@ -46,14 +44,15 @@
 
       function updateActiveSection() {
         const triggerLine = Math.min(window.innerHeight * 0.36, 280);
-        let current = sections[0];
+        let activeItem = navItems[0];
 
         sections.forEach((section) => {
           const rect = section.getBoundingClientRect();
-          if (rect.top <= triggerLine && rect.bottom > 80) current = section;
+          if (rect.top <= triggerLine && rect.bottom > 80) {
+            activeItem = linkById.get(section.id) || activeItem;
+          }
         });
 
-        const activeItem = linkById.get(current.id);
         if (activeItem) setActive(activeItem);
       }
 
@@ -98,7 +97,7 @@
             : `${baseTag}${html}`;
         }
 
-        const scriptTag = `<script>(${portfolioScrollSpy.toString()})();<\\/script>`;
+        const scriptTag = '<script>(' + portfolioScrollSpy.toString() + ')();</' + 'script>';
         if (!html.includes('__portfolioScrollSpyReady')) {
           html = html.includes('</body>')
             ? html.replace('</body>', `${scriptTag}</body>`)
