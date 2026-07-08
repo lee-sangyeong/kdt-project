@@ -97,16 +97,10 @@
             : `${baseTag}${html}`;
         }
 
-        const scriptTag = '<script>(' + portfolioScrollSpy.toString() + ')();</' + 'script>';
-        if (!html.includes('__portfolioScrollSpyReady')) {
-          html = html.includes('</body>')
-            ? html.replace('</body>', `${scriptTag}</body>`)
-            : `${html}${scriptTag}`;
-        }
-
         document.open();
         document.write(html);
         document.close();
+        window.setTimeout(portfolioScrollSpy, 0);
       } catch (error) {
         document.body.innerHTML = `<div class="loading"><b>Portfolio load failed.</b><br>${String(error.message || error)}</div>`;
       }
