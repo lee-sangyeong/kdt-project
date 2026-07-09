@@ -85,22 +85,33 @@
       const commit = match ? match[1] : 'master';
       const assetBase = `https://raw.githubusercontent.com/lee-sangyeong/kdt-project/${commit}/kdt12-portfolio/`;
       const rawUrl = `${assetBase}${file}`;
+      const cssUrl = `${assetBase}style.css`;
 
       try {
-        const response = await fetch(rawUrl, { cache: 'no-store' });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        let html = await response.text();
-        const baseTag = `<base href="${assetBase}">`;
-        if (!/<base\s/i.test(html)) {
-          html = html.includes('<head>')
-            ? html.replace('<head>', `<head>${baseTag}`)
-            : `${baseTag}${html}`;
-        }
+        const [htmlResponse, cssResponse] = await Promise.all([
+          fetch(rawUrl, { cache: 'no-store' }),
+          fetch(cssUrl, { cache: 'no-store' })
+        ]);
+        if (!htmlResponse.ok) throw new Error(`HTML HTTP ${htmlResponse.status}`);
+        if (!cssResponse.ok) throw new Error(`CSS HTTP ${cssResponse.status}`);
 
+        const html = await htmlResponse.text();
+        const css = await cssResponse.text();
         const parsed = new DOMParser().parseFromString(html, 'text/html');
+
         document.documentElement.lang = parsed.documentElement.lang || 'ko';
         document.title = parsed.title || document.title;
         document.head.innerHTML = parsed.head.innerHTML;
+
+        const base = document.createElement('base');
+        base.href = assetBase;
+        document.head.prepend(base);
+
+        document.querySelectorAll('link[rel~="stylesheet"]').forEach((link) => link.remove());
+        const style = document.createElement('style');
+        style.setAttribute('data-portfolio-inline-css', 'true');
+        style.textContent = css;
+        document.head.appendChild(style);
 
         const loading = document.querySelector('.loading');
         if (loading) loading.remove();
